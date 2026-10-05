@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Feedback Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 30px;
+        }
+
+        nav {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #f5f5f5;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .card h2 {
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        .card p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 800px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">Submit Feedback</a>
+        <a href="/feedback.html">View All Feedback</a>
+        <a href="/dashboard.html">Dashboard</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>Feedback Dashboard</h1>
+
+        <div class="cards">
+
+            <div class="card">
+                <p>Total Feedback</p>
+                <h2 id="totalFeedback">0</h2>
+            </div>
+
+            <div class="card">
+                <p>Average Rating</p>
+                <h2 id="averageRating">0/5</h2>
+            </div>
+
+            <div class="card">
+                <p>Highest Rating</p>
+                <h2 id="highestRating">0/5</h2>
+            </div>
+
+            <div class="card">
+                <p>Lowest Rating</p>
+                <h2 id="lowestRating">0/5</h2>
+            </div>
+
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+    <script>
+
+        async function loadDashboard() {
+
+            try {
+
+                const response = await fetch("/feedback");
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.error || "Failed to load feedback"
+                    );
+                }
+
+                const feedback = result.data;
+
+                if (feedback.length === 0) {
+
+                    document.getElementById("message").innerText =
+                        "No feedback available.";
+
+                    return;
+                }
+
+                // TOTAL FEEDBACK
+
+                const total = feedback.length;
+
+                document.getElementById("totalFeedback").innerText =
+                    total;
+
+
+                // RATINGS
+
+                const ratings = feedback.map(
+                    item => Number(item.rating)
+                );
+
+
+                // AVERAGE
+
+                const totalRating = ratings.reduce(
+                    (sum, rating) => sum + rating,
+                    0
+                );
+
+                const average =
+                    totalRating / ratings.length;
+
+
+                document.getElementById("averageRating").innerText =
+                    average.toFixed(1) + "/5";
+
+
+                // HIGHEST
+
+                const highest =
+                    Math.max(...ratings);
+
+                document.getElementById("highestRating").innerText =
+                    highest + "/5";
+
+
+                // LOWEST
+
+                const lowest =
+                    Math.min(...ratings);
+
+                document.getElementById("lowestRating").innerText =
+                    lowest + "/5";
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                document.getElementById("message").innerText =
+                    "Failed to load dashboard.";
+
+            }
+
+        }
+
+        loadDashboard();
+
+    </script>
+
+</body>
+
+</html>

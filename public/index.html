@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Feedback Form</title>
+
+    <style>
+        nav {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+nav a {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+nav a:hover {
+    background-color: #555;
+}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+    <nav>
+    <a href="/">Submit Feedback</a>
+    <a href="/feedback.html">View All Feedback</a>
+    <a href="/dashboard.html">Dashboard</a>
+</nav>
+</nav>
+
+<div class="container">
+
+    <h1>College Feedback Form</h1>
+
+    <form id="feedbackForm">
+
+        <label>Student Name</label>
+        <input type="text" id="student_name" required>
+
+        <label>Department</label>
+        <select id="department" required>
+            <option value="">Select Department</option>
+            <option value="CSE">CSE</option>
+            <option value="ECE">ECE</option>
+            <option value="IT">IT</option>
+            <option value="EEE">EEE</option>
+            <option value="MECH">MECH</option>
+        </select>
+
+        <label>Year</label>
+        <select id="year" required>
+            <option value="">Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+
+        <label>Faculty Name</label>
+        <input type="text" id="faculty_name" required>
+
+        <label>Rating</label>
+        <select id="rating" required>
+            <option value="">Select Rating</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4">4 - Very Good</option>
+            <option value="3">3 - Good</option>
+            <option value="2">2 - Average</option>
+            <option value="1">1 - Poor</option>
+        </select>
+
+        <label>Comments</label>
+        <textarea id="comments" required></textarea>
+
+        <button type="submit">Submit Feedback</button>
+
+    </form>
+
+    <div id="message"></div>
+
+</div>
+
+<script>
+    document.getElementById("feedbackForm").addEventListener("submit", async function(e) {e.preventDefault();
+        const studentName = document.getElementById("student_name").value.trim();
+const department = document.getElementById("department").value.trim();
+const year = document.getElementById("year").value.trim();
+const facultyName = document.getElementById("faculty_name").value.trim();
+const rating = document.getElementById("rating").value;
+const comments = document.getElementById("comments").value.trim();
+
+if (
+    !studentName ||
+    !department ||
+    !year ||
+    !facultyName ||
+    !rating ||
+    !comments
+) {
+    alert("Please fill in all fields.");
+    return;
+}
+
+    document.getElementById("feedbackForm").addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const feedback = {
+            student_name: document.getElementById("student_name").value,
+            department: document.getElementById("department").value,
+            year: document.getElementById("year").value,
+            faculty_name: document.getElementById("faculty_name").value,
+            rating: Number(document.getElementById("rating").value),
+            comments: document.getElementById("comments").value
+        };
+
+        try {
+
+            const response = await fetch("/api/feedback", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(feedback)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+
+                document.getElementById("message").innerText =
+                    "Feedback submitted successfully!";
+
+                document.getElementById("feedbackForm").reset();
+
+            } else {
+
+                document.getElementById("message").innerText =
+                    "Error: " + (result.error || "Failed to submit feedback");
+
+            }
+
+        } catch (error) {
+
+            document.getElementById("message").innerText =
+                "Server connection failed.";
+
+            console.error(error);
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
